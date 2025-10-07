@@ -1,0 +1,119 @@
+// Prisma schema for KlarParat morning motivation app
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./data.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Child {
+  id        String   @id @default(cuid())
+  name      String
+  birthdate DateTime?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions  Session[]
+}
+
+model Task {
+  id                  String   @id @default(cuid())
+  title               String
+  emoji               String?
+  internalDescription String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  routineDefaults RoutineTaskDefault[]
+  sessionTasks   SessionTask[]
+}
+
+model Routine {
+  id        String   @id @default(cuid())
+  title     String
+  startTime String
+  endTime   String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  children RoutineChild[]
+  defaults RoutineTaskDefault[]
+  sessions Session[]
+}
+
+model RoutineChild {
+  id        String  @id @default(cuid())
+  routineId String
+  childId   String
+
+  routine Routine @relation(fields: [routineId], references: [id])
+  child   Child   @relation(fields: [childId], references: [id])
+
+  @@unique([routineId, childId])
+}
+
+model RoutineTaskDefault {
+  id         String  @id @default(cuid())
+  routineId  String
+  taskId     String
+  orderIndex Int
+  estSeconds Int
+
+  routine Routine @relation(fields: [routineId], references: [id])
+  task    Task    @relation(fields: [taskId], references: [id])
+
+  @@unique([routineId, taskId])
+}
+
+model Session {
+  id          String   @id @default(cuid())
+  dateISO     String
+  routineId   String
+  childId     String
+  status      String
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  windowStart String
+  windowEnd   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  reward      String?
+
+  routine Routine @relation(fields: [routineId], references: [id])
+  child   Child   @relation(fields: [childId], references: [id])
+  tasks   SessionTask[]
+  speechLogs SpeechLog[]
+}
+
+model SessionTask {
+  id          String   @id @default(cuid())
+  sessionId   String
+  taskId      String
+  orderIndex  Int
+  plannedSecs Int
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  actualSecs  Int?
+  status      String
+
+  session Session @relation(fields: [sessionId], references: [id])
+  task    Task    @relation(fields: [taskId], references: [id])
+}
+
+model SpeechLog {
+  id        String   @id @default(cuid())
+  sessionId String?
+  kind      String
+  childName String
+  text      String
+  voice     String
+  createdAt DateTime @default(now())
+  metaJson  String
+
+  session Session? @relation(fields: [sessionId], references: [id])
+}
