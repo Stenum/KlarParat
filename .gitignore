@@ -1,0 +1,8 @@
+node_modules
+pnpm-lock.yaml
+app/server/.env
+app/server/prisma/data.db
+app/server/prisma/migrations/
+.DS_Store
+.idea/
+.vscode/
