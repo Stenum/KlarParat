@@ -7,6 +7,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..', '..');
 
+process.env.DATABASE_URL ??= 'file:./prisma/data.db';
+
 describe('Prisma schema', () => {
   it('passes `prisma validate`', () => {
     let output: Buffer | string = Buffer.from('');
