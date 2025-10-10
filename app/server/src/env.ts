@@ -13,9 +13,14 @@ const envSchema = z.object({
   OPENAI_TTS_VOICE: z.string().default('alloy'),
   RATE_LIMIT_POINTS: z.string().default('30'),
   RATE_LIMIT_DURATION: z.string().default('60'),
+  DATABASE_URL: z.string().default('file:./prisma/data.db'),
 });
 
 const env = envSchema.parse(process.env);
+
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = env.DATABASE_URL;
+}
 
 export const ENV = {
   ...env,

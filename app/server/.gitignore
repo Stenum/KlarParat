@@ -1,0 +1,2 @@
+# Prisma SQLite databases created during development and tests
+prisma/*.db*
